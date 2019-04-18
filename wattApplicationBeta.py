@@ -4,6 +4,7 @@ from tkinter import scrolledtext
 import os
 import pyodbc
 import time
+import datetime
 
 window = Tk()
 window.title("Welcome to WATT")
@@ -31,51 +32,88 @@ tab_control.pack(expand=1, fill='both')
 
 # gets value options from DB
 username = os.getlogin()
-# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
 
-taskTypes = {
-    1: 'Files',
-    2: 'Inquiries',
-    3: 'Emails',
-    4: 'Review',
-    5: 'Call',
-    6: 'Meeting'
-}
+# DESTKTOP STRING
+# serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+# LAPTOP STRING
+# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+
+
+
+def getTaskTypeList():
+    conn = pyodbc.connect(serverString)
+    cursor = conn.cursor()
+    sqlStatement = "SELECT taskTypeName FROM watt.taskType"
+    cursor.execute(sqlStatement)
+    global taskTypes
+    taskTypes = []
+    for row in cursor:
+        taskTypeName = row.taskTypeName
+        taskTypes.append(taskTypeName)
+    conn.commit()
+    conn.close()
 
 def update_clock():
     now = time.strftime("%H:%M:%S")
     clockLabel.configure(text=now)
     window.after(1000, update_clock)
 
+def set_timer():
+    global startTime
+    startTime = time.time()
+
+    update_timer()
+
+def update_timer():
+    updatedTime = time.time()
+    duration = updatedTime - startTime # seconds
+    duration = time.strftime('%H:%M:%S', time.gmtime(duration) )
+    # .strftime('%H:%M:%S')
+    # duration = time.strftime("%H:%M:%S")
+    # duration = duration.strftime('%H:%M:%S', duration)
+    # duration = datetime.datetime.fromtimestamp(duration).strftime('%H:%M:%S')
+    
+    timerLabel.configure(text=duration)
+    window.after(1000, update_timer)
+
 def selected(event):
-
-
-    taskTypeid = combo.get()
-    taskTypeName = taskTypes.get(int(taskTypeid), 'unknown')
+    taskTypeName = combo.get()
     lbl.configure(text = taskTypeName)
 
 def clicked():
     conn = pyodbc.connect(serverString)
     cursor = conn.cursor()
-    taskTypeid = combo.get()
+    taskTypeName = combo.get()
     clientCode = clientCodeTxt.get()
     startDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
-    sqlStatement = "INSERT INTO watt.task (taskTypeId,clientCode,taskNote, startedAtTime) VALUES (" + taskTypeid + ",'" + clientCode + "','" + taskNoteTxt.get() + "','" + startDateTime + "')"
+    sqlStatement = "SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'"
+    print(sqlStatement)
+    cursor.execute(sqlStatement)
+    for row in cursor:
+        taskTypeid = row.taskTypeId
+
+    sqlStatement = "INSERT INTO watt.worked (taskTypeId,clientCode,workedItemNote, startedAtTime) VALUES (" + str(taskTypeid) + ",'" + clientCode + "','" + taskNoteTxt.get() + "','" + startDateTime + "')"
     print(sqlStatement)
     cursor.execute(sqlStatement)
     conn.commit()
     conn.close()
     lbl.configure(text= "updated!")
+    set_timer()
     # taskNoteTxt.set("")
     # clientCodeTxt.set("")
     # clear text fields
 
+getTaskTypeList()
+
 # theme combo selected event
 
 clockLabel = Label(tab1, text="")
-# clockLabel.pack()
-update_clock()
+timerLabel = Label(tab1, text="")
+
+# update_clock() # TESTING
+# set_timer() # TESTING
 
 combo = ttk.Combobox(tab1)
 combo['values']= taskTypes
@@ -103,6 +141,7 @@ taskNoteTxt.grid(column=2,row=2,padx=(5, 5))
 btn.grid(column=3, row=2,padx=(5, 5))
 
 clockLabel.grid(column=2,row=3)
+timerLabel.grid(column=2,row=4)
 
 # Tab 2 Objects
 txtBox = scrolledtext.ScrolledText(tab2,width=40,height=10)
