@@ -7,22 +7,26 @@ import time
 import datetime
 
 window = Tk()
-window.title("Welcome to WATT")
+window.title("WATT")
 window.geometry('650x350')
+window.iconbitmap('watt.ico')
 
 # tab 1: entryies
 tab_control = ttk.Notebook(window)
 tab1 = ttk.Frame(tab_control)
 tab2 = ttk.Frame(tab_control)
  
-tab_control.add(tab1, text='   First    ')
-tab_control.add(tab2, text='   Second    ')
+tab_control.add(tab1, text='   Entries    ')
+tab_control.add(tab2, text='   Daily WATT    ')
  
 lbl1 = Label(tab1, text= 'label1')
 lbl1.grid(column=0, row=0)
  
 lbl2 = Label(tab2, text= 'label2')
 lbl2.grid(column=0, row=0)
+
+reportLabel = Label(tab2,text='',font=("Arial", 8))
+reportLabel.grid(column=0,row=2)
  
 tab_control.pack(expand=1, fill='both')
 # tab1.config(background='#C70039')
@@ -35,10 +39,10 @@ username = os.getlogin()
 
 # DESTKTOP STRING
 # serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
-serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+# serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
 # LAPTOP STRING
 # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
 
 
 
@@ -52,6 +56,18 @@ def getTaskTypeList():
     for row in cursor:
         taskTypeName = row.taskTypeName
         taskTypes.append(taskTypeName)
+    conn.commit()
+    conn.close()
+
+def dailyWATTreport():
+    conn = pyodbc.connect(serverString)
+    cursor = conn.cursor()
+    sqlStatement = "SELECT * FROM WATT.worked"
+    cursor.execute(sqlStatement)
+    results = ''
+    for row in cursor:
+        results += 'row =%r' %(row,)
+    reportLabel.config(text=results)
     conn.commit()
     conn.close()
 
@@ -105,7 +121,7 @@ def clicked():
     # clientCodeTxt.set("")
     # clear text fields
 
-getTaskTypeList()
+
 
 # theme combo selected event
 
@@ -116,9 +132,7 @@ timerLabel = Label(tab1, text="")
 # set_timer() # TESTING
 
 combo = ttk.Combobox(tab1)
-combo['values']= taskTypes
-# (1,2,3,4,5,6)
-# combo.current(0)
+
 combo.bind("<<ComboboxSelected>>", selected)
 
 # Tab 1 Objects
@@ -127,7 +141,7 @@ taskNotelbl = Label(tab1,text="Task Note", font=("Arial", 8))
 clientCodelbl = Label(tab1,text="Code", font=("Arial", 8))
 taskNoteTxt = Entry(tab1,width=20)
 clientCodeTxt = Entry(tab1,width=20)
-btn = Button(tab1, text="Start Task", command=clicked, width=25)
+startButton = Button(tab1, text="Start Task", command=clicked, width=20)
 
 lbl.grid(column=0, row=0)
 # Label Row 1
@@ -138,16 +152,21 @@ taskNotelbl.grid(column=2,row=1)
 combo.grid(column=0, row=2,padx=(5, 5))
 clientCodeTxt.grid(column=1,row=2,padx=(5, 5))
 taskNoteTxt.grid(column=2,row=2,padx=(5, 5))
-btn.grid(column=3, row=2,padx=(5, 5))
+startButton.grid(column=3, row=2,padx=(5, 5))
 
 clockLabel.grid(column=2,row=3)
 timerLabel.grid(column=2,row=4)
 
 # Tab 2 Objects
-txtBox = scrolledtext.ScrolledText(tab2,width=40,height=10)
-txtBox.grid(column=0,row=0)
+# txtBox = scrolledtext.ScrolledText(tab2,width=40,height=10)
+# txtBox.grid(column=0,row=0)
 # Current Queue/Duration Row
 
 
+# Start Up Info
+getTaskTypeList()
+dailyWATTreport()
+combo['values']= taskTypes
+# combo.current(0)
 
 window.mainloop()
