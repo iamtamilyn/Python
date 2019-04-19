@@ -1,4 +1,8 @@
 USE WATTapplication
+
+/*************
+ARCHIVE DATA
+*************/
 --DROP TABLE WATT.archivedWork
 CREATE TABLE watt.archivedWork (
 	archivedWorkId INT PRIMARY KEY IDENTITY(1,1),
@@ -33,3 +37,6 @@ USING
 WHEN NOT MATCHED THEN
 	INSERT (taskTypeName,clientCode,workedItemNote,startedAtTime,endedAtTime,duration)
 	VALUES (source.taskTypeName,source.clientCode,source.workedItemNote,source.startedAtTime,source.endedAtTime,source.duration);
+
+/* RESET DATA */
+--TRUNCATE TABLE watt.worked

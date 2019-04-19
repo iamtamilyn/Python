@@ -115,16 +115,13 @@ WHEN NOT MATCHED THEN
 
 
 /* VIEW: INQ / FALLOUT REVIEW REPORT TEMPLATE */
---DROP VIEW watt.V_reviewReportTracking
+--DROP VIEW watt.V_reviewTrackingReport
 CREATE VIEW watt.V_reviewTrackingReport AS
 SELECT 
-	worked.clientCode, 
-	CAST(worked.startedAtTime AS DATE) [Date Worked],
-	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS StartTimeForDisplay,
-	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS EndTimeForDisplay,
-	worked.duration,
-	FORMAT(endedAtTime - startedAtTime, 'HH:mm:ss', 'en-US') as timediff,
-	FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as minutes, 
+	worked.clientCode AS CODE, 
+	CAST(worked.startedAtTime AS DATE) AS [DATE],
+	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS START,
+	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS [END],
 	CASE 
 		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 5
 			THEN '5 min'
@@ -138,9 +135,23 @@ SELECT
 			THEN '25 min'
 		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 30
 			THEN '30 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 45
+			THEN '45 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 60
+			THEN '60 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 75
+			THEN '75 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 90
+			THEN '90 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 120
+			THEN '120 min'
+		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 150
+			THEN '150 min'
+		WHEN  endedAtTime IS NULL 
+			THEN 'Open'
 		ELSE 
 			'unknown'
-	END AS timeworked
+	END AS DURATION
 FROM 
 	WATT.worked 
 	INNER JOIN WATT.taskType 
