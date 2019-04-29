@@ -37,7 +37,7 @@ tab_control.add(tab2, text='          Daily WATT         ')
 tab_control.add(tab3, text='          Settings         ')
  
 tab_control.pack(expand=True, fill=tk.BOTH)
-ttk.Style().configure("TNotebook", background='white')
+ttk.Style().configure("TNotebook", background='yellow')
 ttk.Style().configure("TNotebook.Tab", foreground='black')
 
 

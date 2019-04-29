@@ -10,6 +10,7 @@ FROM
 	LEFT JOIN WATT.taskType 
 		ON worked.taskTypeId = taskType.taskTypeId
 WHERE
-	CAST(worked.startedAtTime AS DATE)  = '2019-04-19'
+	--CAST(worked.startedAtTime AS DATE)  = '2019-04-19'
+	CAST(worked.startedAtTime AS DATE) LIKE CAST(GETDATE() as DATE)
 GROUP BY
 	taskTypeName

@@ -24,9 +24,13 @@ VALUES
 ('Call'),
 ('Meeting'),
 ('Break'),
+('Little Things'),
 ('Chat/Questions')
 ('Notes/Planning'),
-('Miscellaneous');
+('Training/Shadowing'),
+('Miscellaneous'),
+('Documentation'),
+('Project');
 
 
 --DROP TABLE WATT.task
