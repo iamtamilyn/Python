@@ -15,8 +15,9 @@ CREATE TABLE WATT.taskType (
 	taskTypeName VARCHAR(50)
 )
 
+--DROP TABLE WATT.taskType
 INSERT INTO WATT.taskType (taskTypeName)
-VALUES 
+VALUES
 ('Files'),
 ('Data Inquiries'),
 ('Email'),
@@ -33,17 +34,6 @@ VALUES
 ('Project');
 
 
---DROP TABLE WATT.task
-CREATE TABLE watt.worked (
-	workedItemId INT PRIMARY KEY NOT NULL IDENTITY(1,1),
-	taskTypeId INT,
-	clientCode VARCHAR(4),
-	workedItemNote VARCHAR(100),
-	startedAtTime SMALLDATETIME ,
-	endedAtTime SMALLDATETIME,
-	duration INT,
-	FOREIGN KEY (taskTypeId) REFERENCES WATT.taskType (taskTypeId)
-)
 --DROP TABLE WATT.worked
 CREATE TABLE watt.worked (
 	workedItemId INT PRIMARY KEY NOT NULL IDENTITY(1,1),
@@ -52,7 +42,6 @@ CREATE TABLE watt.worked (
 	workedItemNote VARCHAR(100), 
 	startedAtTime SMALLDATETIME,
 	endedAtTime SMALLDATETIME,
-	duration TIME,
 	FOREIGN KEY (taskTypeId) REFERENCES WATT.taskType (taskTypeId)
 )
 
@@ -113,7 +102,7 @@ WHEN NOT MATCHED THEN
 	VALUES (source.taskTypeName,source.clientCode,source.workedItemNote,source.startedAtTime,source.endedAtTime,source.duration);
 
 
-/* sTORED pROCEDURE?  */
+/* STORED PROCEDURE  */
 
 /*DURATION TRIGGER*/
 
@@ -123,42 +112,89 @@ WHEN NOT MATCHED THEN
 CREATE VIEW watt.V_reviewTrackingReport AS
 SELECT 
 	worked.clientCode AS CODE, 
-	CAST(worked.startedAtTime AS DATE) AS [DATE],
-	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS START,
-	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS [END],
+	CAST(worked.startedAtTime AS DATE) AS [Date Worked],
+	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS StartTimeForDisplay,
+	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS EndTimeForDisplay,
 	CASE 
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 5
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 5
 			THEN '5 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 10
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 10
 			THEN '10 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 15
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int)  <= 15
 			THEN '15 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 20
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int)  <= 20
 			THEN '20 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 25
+		WHEN (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 25
 			THEN '25 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 30
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 30
 			THEN '30 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 45
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 45
 			THEN '45 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 60
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 60
 			THEN '60 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 75
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 75
 			THEN '75 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 90
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 90
 			THEN '90 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 120
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 120
 			THEN '120 min'
-		WHEN  CAST(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as INT) < 150
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) < 150
 			THEN '150 min'
 		WHEN  endedAtTime IS NULL 
-			THEN 'Open'
+			THEN CONCAT((CAST(FORMAT(GETDATE() - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(GETDATE() - startedAtTime, 'mm', 'en-US') as int),'+' )
 		ELSE 
 			'unknown'
-	END AS DURATION
+	END AS timeWorkedForDisplay,
+	'Tamilyn Peck' AS analystNameForDisplay
 FROM 
 	WATT.worked 
 	INNER JOIN WATT.taskType 
 		ON worked.taskTypeId = taskType.taskTypeId
 WHERE 
 	taskType.taskTypeName = 'Review'
+
+/* VIEW: Durations Report */
+--DROP VIEW watt.V_trackingReport
+CREATE VIEW watt.V_trackingReport AS
+SELECT 
+	worked.clientCode AS CODE, 
+	CAST(worked.startedAtTime AS DATE) AS dateWorked,
+	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS StartTimeForDisplay,
+	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS EndTimeForDisplay,
+	CASE 
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 5
+			THEN '5 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 10
+			THEN '10 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int)  <= 15
+			THEN '15 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int)  <= 20
+			THEN '20 min'
+		WHEN (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 25
+			THEN '25 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 30
+			THEN '30 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 45
+			THEN '45 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 60
+			THEN '60 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 75
+			THEN '75 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 90
+			THEN '90 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) <= 120
+			THEN '120 min'
+		WHEN  (CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) < 150
+			THEN '150 min'
+		WHEN  endedAtTime IS NULL 
+			THEN CONCAT((CAST(FORMAT(GETDATE() - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(GETDATE() - startedAtTime, 'mm', 'en-US') as int),'+' )
+		ELSE 
+			'unknown'
+	END AS timeWorkedForDisplay,
+	'Tamilyn Peck' AS analystNameForDisplay,
+	FORMAT(endedAtTime - startedAtTime, 'HH:mm:ss', 'en-US') as realDurantionInTime,
+	(CAST(FORMAT(endedAtTime - startedAtTime, 'HH', 'en-US') as int) *60) + Cast(FORMAT(endedAtTime - startedAtTime, 'mm', 'en-US') as int) as realDurationInMinutes
+FROM 
+	WATT.worked 
+	INNER JOIN WATT.taskType 
+		ON worked.taskTypeId = taskType.taskTypeId

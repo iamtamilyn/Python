@@ -13,7 +13,7 @@ window = tk.Tk()
 
 window.title("WATT")
 window.geometry('650x350')
-window.iconbitmap('watt.ico')
+window.iconbitmap('watticon.ico')
 window.config(background='#C70039')
 
 # Set Style
