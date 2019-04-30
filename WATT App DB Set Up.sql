@@ -108,11 +108,12 @@ WHEN NOT MATCHED THEN
 
 
 /* VIEW: INQ / FALLOUT REVIEW REPORT TEMPLATE */
---DROP VIEW watt.V_reviewTrackingReport
-CREATE VIEW watt.V_reviewTrackingReport AS
+--DROP VIEW watt.V_TrackingReports
+CREATE VIEW watt.V_TrackingReports AS
 SELECT 
+	taskType.taskTypeName,
 	worked.clientCode AS CODE, 
-	CAST(worked.startedAtTime AS DATE) AS [Date Worked],
+	CAST(worked.startedAtTime AS DATE) AS dateWorked,
 	FORMAT(worked.startedAtTime, 'hh:mm tt', 'en-US') AS StartTimeForDisplay,
 	FORMAT(worked.endedAtTime, 'hh:mm tt', 'en-US') AS EndTimeForDisplay,
 	CASE 
@@ -151,7 +152,7 @@ FROM
 	INNER JOIN WATT.taskType 
 		ON worked.taskTypeId = taskType.taskTypeId
 WHERE 
-	taskType.taskTypeName = 'Review'
+	taskType.taskTypeName IN ('Data Inquiries','Call')
 
 /* VIEW: Durations Report */
 --DROP VIEW watt.V_trackingReport
