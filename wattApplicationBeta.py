@@ -41,21 +41,33 @@ ttk.Style().configure("TNotebook", background='yellow')
 ttk.Style().configure("TNotebook.Tab", foreground='black')
 
 
-def getTaskTypeList():
-    # get list of task types for combo box
+def queryDatabase(sqlStatement):
+    print('executing',sqlStatement)
+    global conn
     conn = pyodbc.connect(serverString)
     cursor = conn.cursor()
-    sqlStatement = "SELECT taskTypeName FROM watt.taskType"
     cursor.execute(sqlStatement)
-    global taskTypes
-    taskTypes = []
-    for row in cursor:
-        taskTypeName = row.taskTypeName
-        taskTypes.append(taskTypeName)
+    results = []
+    try: 
+        for row in cursor:
+            print('funcQlen',len(row))
+            for x in range(0,len(row)):
+                # print('funcQ',row[x])
+                results.append(row[x])
+        print('funcQr',row)
+    except:
+        results = None
+    print('funcQ.',results)
     conn.commit()
     conn.close()
+    return results
+
+def getTaskTypeList():
+    # get list of task types for combo box
+    global taskTypes
+    taskTypes = queryDatabase("SELECT taskTypeName FROM watt.taskType")
     taskListCombo['values']= taskTypes
-    # combo.current(0)
+    taskListCombo.current(0)
 
 def dailyWATTreport():
     # get report of work done
@@ -97,6 +109,7 @@ def taskTypeSelected(event):
 
 def startWorkItem():
     # error if no task type selected
+    global currentWorkingItemId
     taskTypeName = taskListCombo.get()
     if taskTypeName == "":
         messagebox.showinfo('Error: Missing Selection','Choose a Task Type')
@@ -106,30 +119,27 @@ def startWorkItem():
     if check != "":
         endWorkItem()
     # record selected task
-    conn = pyodbc.connect(serverString)
-    cursor = conn.cursor()
     clientCode = clientCodeTxt.get()
     workingNote = workedItemNote.get()
     startDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
-    sqlStatement = "SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'"
-    print(sqlStatement)
-    cursor.execute(sqlStatement)
-    for row in cursor:
-        taskTypeid = row.taskTypeId
+    results = []
+    # sqlStatement = "SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'"
+    results = queryDatabase("SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'")
+    taskTypeid = results[0]
 
     sqlStatement = "INSERT INTO watt.worked (taskTypeId,clientCode,workedItemNote, startedAtTime) VALUES (" + str(taskTypeid) + ",'" + clientCode + "','" + workingNote + "','" + startDateTime + "')"
-    print(sqlStatement)
-    cursor.execute(sqlStatement)
+    queryDatabase(sqlStatement)
 
-    sqlStatement  = 'SELECT MAX(workedItemId) AS lastEntry FROM watt.worked'
-    print(sqlStatement)
-    cursor.execute(sqlStatement)
-    for row in cursor:
-        global currentWorkingItemId
-        currentWorkingItemId = row.lastEntry
+    sqlStatement = 'SELECT workedItemId,taskTypeHexColor AS lastEntry FROM watt.worked INNER JOIN watt.tasktype ON worked.taskTypeId = taskType.taskTypeId WHERE workedItemId = (SELECT MAX(workedItemId) AS lastEntry FROM watt.worked)'
+    results = queryDatabase(sqlStatement)
+    try: 
+        print('test2a',results[0])
+        currentWorkingItemId = results[0]
+        print('test3a',results[1])
+        setColor = '#' + results[1]
+    except:
+        print('old query do not work')
 
-    conn.commit()
-    conn.close()
     status.configure(text= "Added Item!")
     set_timer()
     # set working item
@@ -139,26 +149,21 @@ def startWorkItem():
     endButton.grid(column=4, row=5,padx=(5, 5))
     taskListCombo.current()
 
-    # reset options
+    # clear text fields
     clientCodeTxt.delete(0, "end")
     clientCodeTxt.insert(0, "")
     workedItemNote.delete(0, "end")
     workedItemNote.insert(0, "")
-    # taskNoteTxt.set("")
-    # clientCodeTxt.set("")
-    # clear text fields
+    
+    ttk.Style().configure("TNotebook", background=setColor)
 
 def endWorkItem():
-    conn = pyodbc.connect(serverString)
-    cursor = conn.cursor()
-
     endDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
-
+    try: currentWorkingItemId
+    except: currentWorkingItemId = 87
     sqlStatement = "UPDATE watt.worked SET endedAtTime = '" + endDateTime + "' WHERE workedItemId = " + str(currentWorkingItemId)
-    print(sqlStatement)
-    cursor.execute(sqlStatement)
-    conn.commit()
-    conn.close()
+    # print(sqlStatement)
+    queryDatabase(sqlStatement)
 
     # un-set working item
     workingTaskTypeLabel.configure(text="")
@@ -171,6 +176,7 @@ def endWorkItem():
     endButton.grid_forget()
     # Stop Timer
     stop_timer()
+    ttk.Style().configure("TNotebook", background='#000000')
 
 def beforeAppExit():
     check = workingTaskTypeLabel.cget("text")
@@ -183,11 +189,11 @@ username = os.getlogin()
 continueTimer = False
 # DESTKTOP STRING
 # serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
-# serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
 # LAPTOP STRING
 # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
 # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+# serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
 print(serverString)
 
 # Create Tab 1 Objects
@@ -230,17 +236,22 @@ timerLabel.grid(column=3,row=5)
 endButton.grid(column=4, row=5,padx=(5, 5))
 endButton.grid_forget()
 
-
 # Tab 2 Objects
 # txtBox = scrolledtext.ScrolledText(tab2,width=40,height=10)
 # txtBox.grid(column=0,row=0)
 reportLabel = tk.Label(tab2,text='',font=("Arial", 8))
 reportLabel.grid(column=0,row=2)
  
-
 # Start Up Functions
-getTaskTypeList()
-dailyWATTreport()
+def databaseConnection():
+    try:
+        getTaskTypeList()
+    except:
+        print('no DB here')
+        messagebox.showinfo('Error: Missing Database','Closing, Try Again.')
+        exit(0)    
+    # dailyWATTreport()
+databaseConnection()
 
 window.protocol("WM_DELETE_WINDOW", beforeAppExit)
 # ongoing loop

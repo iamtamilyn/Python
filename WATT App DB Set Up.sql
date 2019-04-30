@@ -12,7 +12,8 @@ CREATE SCHEMA WATT;
 
 CREATE TABLE WATT.taskType (
 	taskTypeId INT PRIMARY KEY NOT NULL IDENTITY(1,1),
-	taskTypeName VARCHAR(50)
+	taskTypeName VARCHAR(50),
+	taskTypeHexColor VARCHAR(6)
 )
 
 --DROP TABLE WATT.taskType
