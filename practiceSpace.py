@@ -1,48 +1,44 @@
 import time
 import os
-
+import math
+import pyodbc
 # import datetime
 # os.getenv('COMPUTERNAME')
 
-# taskTypes = {
-#     1: 'Files',
-#     2: 'Inquiries',
-#     3: 'Emails',
-#     4: 'Review',
-#     5: 'Call',
-#     6: 'Meeting'
-# }
 
-# test1 = datetime.datetime.fromtimestamp(1284286794)
-# test2 = datetime.datetime(2010, 1, 1, 17, 0, 0)
+def queryDatabase(sqlStatement):
+    serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+    print('executing',sqlStatement)
+    global conn
+    conn = pyodbc.connect(serverString)
+    cursor = conn.cursor()
+    cursor.execute(sqlStatement)
+    results = []
+    try: 
+        for row in cursor:
+            print('funcQlen',len(row))
+            results.append(row)
+        print('funcQr',row)
+    except:
+        results = None
+    print('funcQ.',results)
+    conn.commit()
+    conn.close()
+    return results
 
-# print(test1)
-# print(test2)
+def getTaskTypeList():
+    # get list of task types for combo box
+    global taskTypes
+    taskTypes = queryDatabase("SELECT taskTypeId, taskTypeName FROM watt.taskType")
+    print(taskTypes)
+    taskTypesDict = dict(taskTypes)
+    print(taskTypesDict)
+    # taskListCombo['values']= taskTypes
+    # taskListCombo.current(0)
 
+def main():
+    getTaskTypeList()
+    
 
-# def CallStoredProc(conn, procName, *args):
-#     sql = """
-#          DECLARE @ret int
-#          EXEC @ret = %s %s
-#          SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
-#     return sql
-# results = CallStoredProc('conn', 'help_me','okay', 23)
-
-# def CallStoredProc2(conn, procName, *args):
-#     addOn = ''
-#     for arg in args:
-#         addOn += ',' + str(arg)
-
-#     print(addOn)
-#     sql = """
-#          DECLARE @ret int
-#          EXEC @ret = %s %s
-#          SELECT @ret""" % (procName, addOn)
-#     return sql
-# results2 = CallStoredProc2('conn', 'help_me','okay', 23)
-
-# print(results)
-# print(results2)
-username = os.getlogin()
-serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + 'LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
-print(serverString)
+if __name__ == "__main__":
+    main()
