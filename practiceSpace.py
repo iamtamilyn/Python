@@ -16,12 +16,12 @@ def queryDatabase(sqlStatement):
     results = []
     try: 
         for row in cursor:
-            print('funcQlen',len(row))
+            print('funcDB',len(row))
             results.append(row)
-        print('funcQr',row)
+        print('funcDB',row)
     except:
         results = None
-    print('funcQ.',results)
+    print('funcDB.',results)
     conn.commit()
     conn.close()
     return results
@@ -32,12 +32,27 @@ def getTaskTypeList():
     taskTypes = queryDatabase("SELECT taskTypeId, taskTypeName FROM watt.taskType")
     print(taskTypes)
     taskTypesDict = dict(taskTypes)
+    taskTypes = []
+    for value in taskTypesDict.values():
+        taskTypes.append(value)
     print(taskTypesDict)
+    print(taskTypes)
     # taskListCombo['values']= taskTypes
     # taskListCombo.current(0)
 
+def getColorsStuff():
+    sqlStatement = 'SELECT workedItemId,taskTypeHexColor AS lastEntry FROM watt.worked INNER JOIN watt.tasktype ON worked.taskTypeId = taskType.taskTypeId WHERE workedItemId = (SELECT MAX(workedItemId) AS lastEntry FROM watt.worked)'
+    results = queryDatabase(sqlStatement)
+    print(results)
+    try: 
+        print('test2a',results[0][0])
+        print('test3a',results[0][1])
+    except:
+        print('old query do not work')
+
 def main():
     getTaskTypeList()
+    # getColorsStuff()
     
 
 if __name__ == "__main__":

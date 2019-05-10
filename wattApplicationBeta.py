@@ -42,7 +42,7 @@ ttk.Style().configure("TNotebook.Tab", foreground='black')
 
 
 def queryDatabase(sqlStatement):
-    print('executing',sqlStatement)
+    print('DB Executing',sqlStatement)
     global conn
     conn = pyodbc.connect(serverString)
     cursor = conn.cursor()
@@ -50,24 +50,29 @@ def queryDatabase(sqlStatement):
     results = []
     try: 
         for row in cursor:
-            print('funcQlen',len(row))
-            for x in range(0,len(row)):
-                # print('funcQ',row[x])
-                results.append(row[x])
-        print('funcQr',row)
+            # print('funcDB',len(row))
+            results.append(row)
+        # print('funcDB',row)
     except:
         results = None
-    print('funcQ.',results)
+    print('DB Return:',results)
     conn.commit()
     conn.close()
     return results
 
+
 def getTaskTypeList():
     # get list of task types for combo box
     global taskTypes
-    taskTypes = queryDatabase("SELECT taskTypeName FROM watt.taskType")
+    global taskTypesDict
+    taskTypes = queryDatabase("SELECT taskTypeId, taskTypeName FROM watt.taskType")
+    taskTypesDict = dict(taskTypes)
+    taskTypes = []
+    for value in taskTypesDict.values():
+        taskTypes.append(value)
     taskListCombo['values']= taskTypes
     taskListCombo.current(0)
+
 
 def dailyWATTreport():
     # get report of work done
@@ -82,11 +87,13 @@ def dailyWATTreport():
     conn.commit()
     conn.close()
 
+
 def set_timer():
     # set start time of the timer
     global startTime
     startTime = time.time()
     update_timer()
+
 
 def update_timer():
     # continually calculate the time since the start time of the timer
@@ -96,47 +103,63 @@ def update_timer():
     timerLabel.configure(text=duration)
     window.after(1000, update_timer)
 
+
 def stop_timer():
     global startTime
     startTime = time.time()
     timerLabel.configure(text="")
     update_timer()
     
+
 def taskTypeSelected(event):
     # show selected task
     taskTypeName = taskListCombo.get()
     status.configure(text = taskTypeName)
+    print(taskTypesDict)
+    print(list(taskTypesDict.keys())[list(taskTypesDict.values()).index(taskTypeName)])
+
+def getIdOfSelectedTaskType(taskTypeName):
+    # taskTypeName = taskListCombo.get()
+     # error if no task type selected
+    if taskTypeName == "":
+        # messagebox.showinfo('Error: Missing Selection','Choose a Task Type')
+        return
+    taskTypeId = list(taskTypesDict.keys())[list(taskTypesDict.values()).index(taskTypeName)]
+    return taskTypeId
 
 def startWorkItem():
-    # error if no task type selected
     global currentWorkingItemId
+
+    # Info for Working Item to Start
+    clientCode = clientCodeTxt.get()
+    workingNote = workedItemNote.get()
+    startDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
     taskTypeName = taskListCombo.get()
-    if taskTypeName == "":
+    taskTypeid = getIdOfSelectedTaskType(taskTypeName) # Get Task Id
+    print('taskTypeid', taskTypeid)
+    # Exit of No Item Selected
+    if taskTypeid == None:
         messagebox.showinfo('Error: Missing Selection','Choose a Task Type')
         return
+
     # check for working item in progress
     check = workingTaskTypeLabel.cget("text")
     if check != "":
         endWorkItem()
-    # record selected task
-    clientCode = clientCodeTxt.get()
-    workingNote = workedItemNote.get()
-    startDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
-    results = []
-    # sqlStatement = "SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'"
-    results = queryDatabase("SELECT taskTypeId FROM WATT.taskType WHERE taskTypeName = '" + taskTypeName + "'")
-    taskTypeid = results[0]
 
+    # Insert Working Item
     sqlStatement = "INSERT INTO watt.worked (taskTypeId,clientCode,workedItemNote, startedAtTime) VALUES (" + str(taskTypeid) + ",'" + clientCode + "','" + workingNote + "','" + startDateTime + "')"
     queryDatabase(sqlStatement)
 
+    # Information on Working Item
     sqlStatement = 'SELECT workedItemId,taskTypeHexColor AS lastEntry FROM watt.worked INNER JOIN watt.tasktype ON worked.taskTypeId = taskType.taskTypeId WHERE workedItemId = (SELECT MAX(workedItemId) AS lastEntry FROM watt.worked)'
+    results = []
     results = queryDatabase(sqlStatement)
     try: 
-        print('test2a',results[0])
-        currentWorkingItemId = results[0]
-        print('test3a',results[1])
-        setColor = '#' + results[1]
+        print('test2a',results[0][0])
+        currentWorkingItemId = results[0][0]
+        print('test3a',results[0][1])
+        setColor = '#' + results[0][1]
     except:
         print('old query do not work')
 
@@ -157,6 +180,7 @@ def startWorkItem():
     
     ttk.Style().configure("TNotebook", background=setColor)
 
+
 def endWorkItem():
     endDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
     sqlStatement = "UPDATE watt.worked SET endedAtTime = '" + endDateTime + "' WHERE workedItemId = " + str(currentWorkingItemId)
@@ -176,11 +200,13 @@ def endWorkItem():
     stop_timer()
     ttk.Style().configure("TNotebook", background='#63666A')
 
+
 def beforeAppExit():
     check = workingTaskTypeLabel.cget("text")
     if check != "":
         endWorkItem()
     window.destroy()
+
 
 # initialize variables #
 continueTimer = False
@@ -247,6 +273,7 @@ endButton.grid_forget()
 reportLabel = tk.Label(tab2,text='',font=("Arial", 8))
 reportLabel.grid(column=0,row=2)
  
+
 # Start Up Functions
 def databaseConnection():
     try:
