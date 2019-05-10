@@ -19,6 +19,7 @@ def fileReportingReview():
 
     # Initialize Variables
     dateOfFileCreation = ''
+    sizeOfFile = 0
     countOfFilesForDate = 0
     countOfRecordsWithError = 0
     countOfParticipantsWithError = 0
@@ -27,6 +28,7 @@ def fileReportingReview():
     fileDataSaved = False
     errorOnRecord = False
 
+    print('Reviewing Files...')
     # Loop Through Directory & Folders in Directory
     for path, subdir, files in os.walk(notImportedFilesLocation):
         for file in files:
@@ -38,11 +40,14 @@ def fileReportingReview():
                 # print('Ingore Type Of:', file) # DEBUG
                 continue
 
-            # Get File Creation Date, Print Error if Cannot Access Properties
+            # Get File Creation Date and Size, Print Error if Cannot Access Properties
             try:
                 dateOfFileCreation = str(datetime.fromtimestamp(os.path.getctime(loaderFile)))[:10]
+                sizeOfFile = os.path.getsize(loaderFile)
             except:
-                print('error getting properties of',os.path.basename(loaderFile))
+                print('error getting properties of (',os.path.basename(loaderFile)[:50],')')
+                print('Review previous manually. Continuing review..')
+                # continue
 
             # Don't Review Certain Date Ranges 
             if dateOfFileCreation < earliestFileCreationDateToReview:
@@ -50,6 +55,11 @@ def fileReportingReview():
                 continue
             if dateOfFileCreation > latestFileCreateDateToReview:
                 # print('Ingore Date Of:', file) # DEBUG
+                continue
+        
+            # Don't Review Empty Files
+            if sizeOfFile == 0:
+                # print('Ingore empty file: (',os.path.basename(loaderFile)[:50],')')
                 continue
 
             # Don't Review Files with Certiain Naming Conventions
@@ -62,7 +72,6 @@ def fileReportingReview():
             if "CampaignSegmentChange" in file:
                 # print('Ingore Name Of:', file) # DEBUG
                 continue
-
 
 
             # Open and Read File

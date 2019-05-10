@@ -159,8 +159,6 @@ def startWorkItem():
 
 def endWorkItem():
     endDateTime = time.strftime("%Y-%m-%d %H:%M:%S")
-    try: currentWorkingItemId
-    except: currentWorkingItemId = 87
     sqlStatement = "UPDATE watt.worked SET endedAtTime = '" + endDateTime + "' WHERE workedItemId = " + str(currentWorkingItemId)
     # print(sqlStatement)
     queryDatabase(sqlStatement)
@@ -176,7 +174,7 @@ def endWorkItem():
     endButton.grid_forget()
     # Stop Timer
     stop_timer()
-    ttk.Style().configure("TNotebook", background='#000000')
+    ttk.Style().configure("TNotebook", background='#63666A')
 
 def beforeAppExit():
     check = workingTaskTypeLabel.cget("text")
@@ -185,15 +183,22 @@ def beforeAppExit():
     window.destroy()
 
 # initialize variables #
-username = os.getlogin()
 continueTimer = False
-# DESTKTOP STRING
-# serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
-serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
-# LAPTOP STRING
-# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-# serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-# serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+username = os.getlogin()
+if username == 'Quincy N':
+    # DESTKTOP STRING
+    # serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+    serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
+elif username == 'thchan':
+    # LOCAL_username
+    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + 'LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
+elif username == 'hesmit':
+    # heather - just computer name
+    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + ';Database=WATTapplication;Trusted_Connection=yes'
+else:
+    # LAPTOP STRING # username_LOCAL
+    # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
 print(serverString)
 
 # Create Tab 1 Objects
@@ -248,7 +253,7 @@ def databaseConnection():
         getTaskTypeList()
     except:
         print('no DB here')
-        messagebox.showinfo('Error: Missing Database','Closing, Try Again.')
+        messagebox.showinfo('Error: Missing Database','Closing, Try Again with DB.')
         exit(0)    
     # dailyWATTreport()
 databaseConnection()

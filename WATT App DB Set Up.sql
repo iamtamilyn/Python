@@ -154,6 +154,7 @@ FROM
 		ON worked.taskTypeId = taskType.taskTypeId
 WHERE 
 	taskType.taskTypeName IN ('Data Inquiries','Call')
+	--AND CAST(worked.startedAtTime AS DATE) BETWEEN '2019-04-26' AND '2019-05-02'
 
 /* VIEW: Durations Report */
 --DROP VIEW watt.V_trackingReport

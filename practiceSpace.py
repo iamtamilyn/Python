@@ -20,26 +20,29 @@ import os
 # print(test2)
 
 
-def CallStoredProc(conn, procName, *args):
-    sql = """
-         DECLARE @ret int
-         EXEC @ret = %s %s
-         SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
-    return sql
-results = CallStoredProc('conn', 'help_me','okay', 23)
+# def CallStoredProc(conn, procName, *args):
+#     sql = """
+#          DECLARE @ret int
+#          EXEC @ret = %s %s
+#          SELECT @ret""" % (procName, ','.join(['?'] * len(args)))
+#     return sql
+# results = CallStoredProc('conn', 'help_me','okay', 23)
 
-def CallStoredProc2(conn, procName, *args):
-    addOn = ''
-    for arg in args:
-        addOn += ',' + str(arg)
+# def CallStoredProc2(conn, procName, *args):
+#     addOn = ''
+#     for arg in args:
+#         addOn += ',' + str(arg)
 
-    print(addOn)
-    sql = """
-         DECLARE @ret int
-         EXEC @ret = %s %s
-         SELECT @ret""" % (procName, addOn)
-    return sql
-results2 = CallStoredProc2('conn', 'help_me','okay', 23)
+#     print(addOn)
+#     sql = """
+#          DECLARE @ret int
+#          EXEC @ret = %s %s
+#          SELECT @ret""" % (procName, addOn)
+#     return sql
+# results2 = CallStoredProc2('conn', 'help_me','okay', 23)
 
-print(results)
-print(results2)
+# print(results)
+# print(results2)
+username = os.getlogin()
+serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + 'LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
+print(serverString)
