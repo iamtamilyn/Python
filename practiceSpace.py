@@ -51,9 +51,16 @@ def getColorsStuff():
         print('old query do not work')
 
 def main():
-    getTaskTypeList()
+    # getTaskTypeList()
     # getColorsStuff()
-    
+    dataSetCollection = ['Hello','Hi','There']
+    error = 'Tamilyn'
+    if error in dataSetCollection:
+        print("found")
+    else:
+        print("not found")
+        dataSetCollection.insert(len(dataSetCollection), error)
+        print(dataSetCollection)
 
 if __name__ == "__main__":
     main()
