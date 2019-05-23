@@ -51,7 +51,16 @@ def getColorsStuff():
         print('old query do not work')
 
 def main():
-    getTaskTypeList()
+    # getTaskTypeList()
+
+    PASSWORDS = {
+        "email" : "hello@gmail.com",
+        "thing" : "valuething"
+    }
+
+    valuegetting = PASSWORDS['email']
+
+    print(valuegetting)
     # getColorsStuff()
     
 

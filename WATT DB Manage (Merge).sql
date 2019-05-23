@@ -14,11 +14,6 @@ CREATE TABLE watt.archivedWork (
 	duration TIME
 )
 
-UPDATE watt.worked
-SET endedAtTime = GETDATE()
-WHERE workedItemId = 11
-
-
 select * from watt.archivedWork
 
 MERGE INTO WATT.archivedWork AS target

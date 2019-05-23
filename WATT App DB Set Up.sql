@@ -17,25 +17,26 @@ CREATE TABLE WATT.taskType (
 )
 
 --DROP TABLE WATT.taskType
-INSERT INTO WATT.taskType (taskTypeName)
+--TRUNCATE TABLE watt.taskType
+INSERT INTO WATT.taskType (taskTypeName,taskTypeHexColor)
 VALUES
-('Files'),
-('Data Inquiries'),
-('Email'),
-('Review'),
-('Call'),
-('Meeting'),
-('Break'),
-('Little Things'),
-('Chat/Questions')
-('Notes/Planning'),
-('Training/Shadowing'),
-('Miscellaneous'),
-('Documentation'),
-('Project');
+('Files','00C389'),
+('Data Inquiries','FFB81C'),
+('Email','00A0D2'),
+('Call','DDD0CF'),
+('Review','D9E6DC'),
+('Misc. Client Work','D8DBD8'),
+('Meeting','D8D7DF'),
+('Break','D9E6DC'),
+('Training/Shadowing','702082'),
+('Documentation','C110A0'),
+('Coding/SQL','C70039'),
+('Chat/Questions','EFEEDE'),
+('Misc. Non-Client','C8D7DF');
 
 
 --DROP TABLE WATT.worked
+--TRUNCATE TABLE watt.worked
 CREATE TABLE watt.worked (
 	workedItemId INT PRIMARY KEY NOT NULL IDENTITY(1,1),
 	taskTypeId INT,
@@ -66,41 +67,6 @@ VALUES
 ('4460'),
 ('4420'),
 ('watt')
-
---DROP TABLE WATT.archivedWork
-CREATE TABLE watt.archivedWork (
-	archivedWorkId INT PRIMARY KEY IDENTITY(1,1),
-	taskTypeName VARCHAR(20),
-	clientCode VARCHAR(4),
-	workedItemNote VARCHAR(100), 
-	startedAtTime SMALLDATETIME,
-	endedAtTime SMALLDATETIME,
-	duration TIME
-)
-
-UPDATE watt.worked
-SET endedAtTime = GETDATE()
-WHERE workedItemId = 11
-
-
-select * from watt.archivedWork
-
-MERGE INTO WATT.archivedWork AS target
-USING 
-	(SELECT 
-		taskTypeName, clientCode, workedItemNote, startedAtTime, endedAtTime, endedAtTime 
-	FROM watt.worked 
-	INNER JOIN watt.taskType 
-		ON worked.taskTypeId = taskType.taskTypeId) 
-	AS source (taskTypeName,clientCode,workedItemNote,startedAtTime,endedAtTime,duration)
-	ON (target.taskTypeName = source.taskTypeName
-		AND target.clientCode = source.clientCode
-		AND target.workedItemNote = source.workedItemNote
-		AND target.startedAtTime = source.startedAtTime)
-
-WHEN NOT MATCHED THEN
-	INSERT (taskTypeName,clientCode,workedItemNote,startedAtTime,endedAtTime,duration)
-	VALUES (source.taskTypeName,source.clientCode,source.workedItemNote,source.startedAtTime,source.endedAtTime,source.duration);
 
 
 /* STORED PROCEDURE  */
