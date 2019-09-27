@@ -92,9 +92,10 @@ def printResults(dataSetCollection):
         thewriter = csv.writer(reportFile)
 
         # Loop Through Results List and Write to CSV
-        for dateSet in range(0,len(dataSetCollection)):
+        for dateSet in dataSetCollection:
             # print(dataSetCollection[dateSet])
-            thewriter.writerow(dataSetCollection[dateSet])
+            # thewriter.writerow(dataSetCollection[dateSet])
+             thewriter.writerow(dateSet)
             # print(dataSetByDate[dateSet]) # DEBUG
 
 
