@@ -29,10 +29,18 @@ VALUES
 ('Meeting','D8D7DF'),
 ('Break','D9E6DC'),
 ('Training/Shadowing','702082'),
-('Documentation','C110A0'),
-('Coding/SQL','C70039'),
 ('Chat/Questions','EFEEDE'),
-('Misc. Non-Client','C8D7DF');
+('Misc. Non-Client','C8D7DF'),
+('Fallouts','D8DBD8'),
+('JIRA','D8DBD8'),
+('CDSR','D8DBD8'),
+('DRR','D8DBD8'),
+('SQL/Reporting','C70039'),
+('Project/Documentation','C110A0'),
+('Project/Coding','C8D7DF'),
+('Project/Misc','D8DBD8'),
+('Leveling(PS,Read)','D8DBD8'),
+('Non-Work,IT/Comp','D8DBD8');
 
 
 --DROP TABLE WATT.worked

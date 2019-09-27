@@ -12,7 +12,7 @@ import datetime
 window = tk.Tk()
 
 window.title("WATT")
-window.geometry('650x350')
+window.geometry('700x350')
 window.iconbitmap('watticon.ico')
 window.config(background='#C70039')
 
@@ -31,10 +31,12 @@ tab_control = ttk.Notebook(window)
 tab1 = ttk.Frame(tab_control)
 tab2 = ttk.Frame(tab_control)
 tab3 = ttk.Frame(tab_control)
+tab4 = ttk.Frame(tab_control)
  
-tab_control.add(tab1, text='          Track Work         ')
-tab_control.add(tab2, text='          Daily WATT         ')
-tab_control.add(tab3, text='          Settings         ')
+tab_control.add(tab1, text='                 Track Work                ')
+tab_control.add(tab2, text='                 Daily WATT                ')
+tab_control.add(tab3, text='                 Manage                    ')
+tab_control.add(tab4, text='                 Settings                  ')
  
 tab_control.pack(expand=True, fill=tk.BOTH)
 ttk.Style().configure("TNotebook", background='yellow')
@@ -221,6 +223,9 @@ elif username == 'thchan':
 elif username == 'hesmit':
     # heather - just computer name
     serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + ';Database=WATTapplication;Trusted_Connection=yes'
+elif username == 'cyntgar':
+    # cynthia - SJL-4LQRH72\LOCAL_CYNTGAR 
+    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
 else:
     # LAPTOP STRING # username_LOCAL
     # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
@@ -229,21 +234,21 @@ print(serverString)
 
 # Create Tab 1 Objects
 spacing = tk.Label(tab1,text="")
-status = tk.Label(tab1,text="Hello, " + username +"!", font=("Arial Bold", 10))
+status = tk.Label(tab1,text="Hello, " + username +"!", font=("Calibri Bold", 10))
 taskListLabel = tk.Label(tab1,text="Task Type")
-taskListCombo = ttk.Combobox(tab1, width=15)
+taskListCombo = ttk.Combobox(tab1, font ="Calibri 8",width=15)
 taskListCombo.bind("<<ComboboxSelected>>", taskTypeSelected)
-clientCodeLabel = tk.Label(tab1,text="Client Code", font=("Arial", 8), width=10)
-workedItemNoteLabel = tk.Label(tab1,text="Note", font=("Arial", 8))
-clientCodeTxt = tk.Entry(tab1,width=20)
-workedItemNote = tk.Entry(tab1,width=20)
-startButton = tk.Button(tab1, text="Start", command=startWorkItem, width=15)
+clientCodeLabel = tk.Label(tab1,text="Client Code", font=("Calibri", 8), width=10)
+workedItemNoteLabel = tk.Label(tab1,text="Note", font=("Calibri", 8))
+clientCodeTxt = tk.Entry(tab1,font ="Calibri 9",width=10)
+workedItemNote = tk.Entry(tab1,font ="Calibri 9",width=20)
+startButton = tk.Button(tab1, text="Start",font ="Calibri 8", command=startWorkItem, width=15)
 currentWorkingLabel = tk.Label(tab1,text="")
 workingTaskTypeLabel = tk.Label(tab1,text="")
 workingClientCodeLabel = tk.Label(tab1,text="")
 workingTaskNoteLabel = tk.Label(tab1,text="")
 timerLabel = tk.Label(tab1, text="")
-endButton = tk.Button(tab1, text="End", command=endWorkItem, width=15)
+endButton = tk.Button(tab1, text="End",font ="Calibri 8", command=endWorkItem, width=15)
 
 # Organize Tab 1 Objects 
     # Row 0 (messages)
