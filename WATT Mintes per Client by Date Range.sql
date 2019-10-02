@@ -9,7 +9,7 @@ SELECT
 FROM WATT.worked 
 --WHERE  CAST(worked.startedAtTime AS DATE) BETWEEN '2019-04-26' AND '2019-05-02'
 WHERE  
-	CAST(worked.startedAtTime AS DATE) BETWEEN '2019-09-13' AND '2019-09-19'
+	CAST(worked.startedAtTime AS DATE) BETWEEN '2019-09-20' AND '2019-09-26'
 GROUP BY
 	worked.clientCode
 ORDER BY 

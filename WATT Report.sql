@@ -75,8 +75,8 @@ SET clientCode =  'NEST'
 WHERE workedItemId = 2145
 
 UPDATE watt.worked
-SET clientCode =  'LABC'
-WHERE clientCode =  ':LABC'
+SET clientCode =  'IBM0'
+WHERE clientCode =  'IBM'
 
 *****************UPDATE NOTE*****************************
 UPDATE watt.worked
