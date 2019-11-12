@@ -85,7 +85,7 @@ def fileReview():
     
     # print to CSV
     username = os.getlogin()
-    reportOutputLocation = '\\\\secureshare\\Encrypted Share\\Delivery Management\\ETL Load Checklists\\In Progress\\Tamilyn Peck\\Tools and Testing\\ReportOutput' # TESTING LOCATION
+    reportOutputLocation = '\\\\secureshare\\Encrypted Share\\Delivery Management\\ETL Load Checklists\\In Progress\\Tamilyn Peck\\Tools and Testing\\Python\\ReportOutput' # TESTING LOCATION
     reportName = "CENTSsnSearch_" + str(datetime.today())[:19].replace(':','') + username + ".csv"
     reportOutputFilePathName = os.path.join(reportOutputLocation, reportName)
     # Open File to Write

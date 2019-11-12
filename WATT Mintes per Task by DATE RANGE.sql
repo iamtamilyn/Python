@@ -10,7 +10,7 @@ FROM WATT.worked
 	INNER JOIN WATT.taskType 
 		ON worked.taskTypeId = taskType.taskTypeId
 WHERE  
-	CAST(worked.startedAtTime AS DATE) BETWEEN '2019-09-20' AND '2019-09-26'
+	CAST(worked.startedAtTime AS DATE) BETWEEN '2019-11-01' AND '2019-11-07'
 	--CAST(worked.startedAtTime AS DATE) LIKE CAST(GETDATE() as DATE)
 GROUP BY 
 	taskType.taskTypeName

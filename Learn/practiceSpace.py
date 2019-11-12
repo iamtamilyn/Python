@@ -127,7 +127,19 @@ def printingLoop():
             # print(dataSetByDate[dateSet]) # DEBUG
     print('results in ReportOutput')
 
+def findStringList():
+    sflCodeList = ['LABC','FARM','MDLZ','LIBM','KRFT','WTW0','CHEV','COKE','BAKK']
+    fileName = 'lkjdfLABCel2019'
+    for x in sflCodeList:
+        if x in fileName:
+            print("Match Found")
+            break # just breaks the for loop
+        else:
+            print("No Match")
+    print("which level")
+
 if __name__ == "__main__":
     # printingLoop()
     today = str(date.today() - timedelta(days=1))
     print(today)
+    findStringList()

@@ -42,8 +42,10 @@ for account in accounts:
     # DataSupport Email Inbox 1
     print(folders[1]) 
     subFolders = folders[1].Folders
-    podFour = folders[1].Folders['.Pod4']
-    podFourFolders = folders[1].Folders['.Pod4'].Folders
+    # podFour = folders[1].Folders['.Pod4']
+    SQLNotification = folders[1].Folders['SQL Notification']
+    # podFourFolders = folders[1].Folders['.Pod4'].Folders
+    SQLNotificationfolder = folders[1].Folders['SQL Notification'].Folders
     podFourCompletedFolders = folders[1].Folders['.Pod4'].Folders['Completed'].Folders
     for f in podFourCompletedFolders:
         print(f) 

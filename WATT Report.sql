@@ -12,14 +12,14 @@ SELECT * FROM WATT.worked WHERE  CAST(worked.startedAtTime AS DATE) LIKE '2019-0
 SELECT *
 FROM 
 	watt.V_trackingReports
-WHERE  CAST(dateWorked AS DATE) BETWEEN '2019-09-20' AND '2019-09-26'
+WHERE  CAST(dateWorked AS DATE) BETWEEN '2019-11-01' AND '2019-11-07'
 AND taskTypeName = 'Call'
 ORDER BY dateWorked
 *****************inq REPORTS****************************************
 SELECT DISTINCT taskTypeName, CODE, dateWorked, analystNameForDisplay
 FROM 
 	watt.V_trackingReports
-WHERE  CAST(dateWorked AS DATE) BETWEEN '2019-09-20' AND '2019-09-26'
+WHERE  CAST(dateWorked AS DATE) BETWEEN '2019-11-01' AND '2019-11-07'
 AND taskTypeName = 'Data Inquiries'
 ORDER BY dateWorked
 *****************TRACKING UTILIZATION**************************
@@ -54,13 +54,13 @@ ORDER BY totalMinutesWorked DESC
 
 *****************UPDATE START DATETIME**************************
 UPDATE watt.worked
-SET startedAtTime = '2019-09-09 09:18:00'
-WHERE workedItemId = 1795
+SET startedAtTime = '2019-10-22 14:47:00'
+WHERE workedItemId = 2608
 
 *****************UPDATE END DATETIME****************************
 UPDATE watt.worked
-SET endedAtTime = '2019-09-19 09:40:00'
-WHERE workedItemId = 2037
+SET endedAtTime = '2019-10-30 15:42:00'
+WHERE workedItemId = 2752
 
 *****************UPDATE TASK TYPE*******************************
 UPDATE watt.worked
@@ -75,8 +75,8 @@ SET clientCode =  'NEST'
 WHERE workedItemId = 2145
 
 UPDATE watt.worked
-SET clientCode =  'IBM0'
-WHERE clientCode =  'IBM'
+SET clientCode =  'WP00'
+WHERE clientCode =  'WP'
 
 *****************UPDATE NOTE*****************************
 UPDATE watt.worked
@@ -84,7 +84,7 @@ SET workedItemNote =  'QA'
 WHERE workedItemId = 2122
 
 *****************DELETE TASK************************************
-DELETE watt.worked WHERE workedItemId IN (1877)
+DELETE watt.worked WHERE workedItemId IN (2753)
 
 
 *****************ADD NEW TASK************************************

@@ -1,10 +1,11 @@
 from jira import JIRA
+import os
 
 def main():
 
     #jira = JIRA('https://jira.atlassian.com')
     # https://jira.extendhealth.com
-    jiraUserName = 'tape'
+    jiraUserName = os.getlogin()
     jiraPassword = '00Norton!'
     jiraURL = 'https://jira.extendhealth.com'
 
@@ -14,16 +15,18 @@ def main():
     # )
     options = {'server': jiraURL}
     jira = JIRA(options, basic_auth=(jiraUserName, jiraPassword))
-    issue = jira.issue('CLDS-8651')
-    status = issue.fields.status
-    project = jira.project('CLDS')
-    print(issue.fields.project.key) 
-    print(issue.fields.issuetype.name) 
-    print(issue.fields.reporter.displayName)
-    print(status)
-    print(project)
-
-
+    try: 
+        issue = jira.issue('CLDS-9087')
+        status = issue.fields.status
+        project = jira.project('CLDS')
+        print(issue.fields.project.key) 
+        print(issue.fields.issuetype.name) 
+        print(issue.fields.reporter.displayName)
+        print(status)
+        print(project)
+    except:
+        print('nope.')
+        exit
 
 
 if __name__== "__main__" :
