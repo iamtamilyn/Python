@@ -64,9 +64,10 @@ def main():
             clientFileFound = 0
             for x in clientCodeList:
                 if x in file:
+                    print(x,"in",file)
                     clientFileFound = 1
                     # print('Ingore Name Of:', file) # DEBUG
-                    break
+                    # break
 
             if clientFileFound == 0:
                 continue
