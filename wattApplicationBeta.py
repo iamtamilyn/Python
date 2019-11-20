@@ -217,19 +217,9 @@ if username == 'Quincy N':
     # DESTKTOP STRING
     # serverString =  'Driver={SQL Server};Server=TPECK\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
     serverString =  'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\SQLEXPRESS;Database=WATTapplication;Trusted_Connection=yes;'
-elif username == 'thchan':
-    # LOCAL_username
-    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + 'LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
-elif username == 'hesmit':
-    # heather - just computer name
-    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + ';Database=WATTapplication;Trusted_Connection=yes'
-elif username == 'cyntgar':
-    # cynthia - SJL-4LQRH72\LOCAL_CYNTGAR 
-    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
 else:
-    # LAPTOP STRING # username_LOCAL
-    # serverString = 'Driver={SQL Server};Server=SJL-5PPPDC2\\TAPE_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
-    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\' + username.upper() + '_LOCAL;Database=WATTapplication;Trusted_Connection=yes'
+    # companyname\LOCAL_username
+    serverString = 'Driver={SQL Server};Server=' + os.getenv('COMPUTERNAME') + '\\LOCAL_' + username.upper() + ';Database=WATTapplication;Trusted_Connection=yes'
 print(serverString)
 
 # Create Tab 1 Objects
@@ -286,7 +276,7 @@ def databaseConnection():
     except:
         print('no DB here')
         messagebox.showinfo('Error: Missing Database','Closing, Try Again with DB.')
-        exit(0)    
+        # exit(0)    
     # dailyWATTreport()
 databaseConnection()
 
